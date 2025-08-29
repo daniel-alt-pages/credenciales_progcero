@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Envío Centralizado - ProgCero</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+        :root {
+            --background-gradient: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            --surface-color: rgba(255, 255, 255, 0.07);
+            --border-color: rgba(255, 255, 255, 0.15);
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --primary-color: #3f51b5;
+            --primary-hover: #5c6bc0;
+            --success-color: #00e676;
+            --danger-color: #e91e63;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--background-gradient);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            width: 100%;
+            max-width: 550px;
+            background: var(--surface-color);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .header img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin-bottom: 15px;
+            border: 2px solid var(--primary-color);
+        }
+        h1 {
+            color: #ffffff;
+            margin: 0;
+            font-size: 24px;
+            font-weight: 600;
+        }
+        .main-actions {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .action-button {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        #sendAllButton {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        #sendAllButton:hover {
+            background-color: var(--primary-hover);
+            box-shadow: 0 0 15px rgba(63, 81, 181, 0.5);
+        }
+        #resetButton {
+            background-color: transparent;
+            border: 1px solid var(--danger-color);
+            color: var(--danger-color);
+        }
+        #resetButton:hover {
+            background-color: var(--danger-color);
+            color: white;
+        }
+        .user-list {
+            list-style: none;
+            padding: 0;
+            max-height: 50vh;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        .user-card {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            background: rgba(0,0,0,0.1);
+            border-radius: 8px;
+            margin-bottom: 12px;
+            transition: background-color 0.2s ease;
+        }
+        .user-card:hover {
+            background: rgba(0,0,0,0.2);
+        }
+        .user-number {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-right: 15px;
+            min-width: 25px;
+        }
+        .user-info {
+            flex-grow: 1;
+        }
+        .user-name {
+            font-weight: 600;
+            font-size: 16px;
+        }
+        .user-status {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        .send-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 18px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            min-width: 120px; /* Ancho mínimo para consistencia */
+        }
+        .send-button:hover {
+            background-color: var(--primary-hover);
+        }
+        .send-button svg {
+            width: 18px;
+            height: 18px;
+        }
+        .send-button.sending {
+            background-color: #555;
+            cursor: wait;
+        }
+        .send-button.sent {
+            background-color: transparent;
+            border: 1px solid var(--success-color);
+            color: var(--success-color);
+            cursor: default;
+        }
+        .send-button.sent:hover {
+            background-color: transparent;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin {
+            animation: spin 1s linear infinite;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <img src="https://images.prismic.io/sgenusdata/aLDAZGGNHVfTObFg_logo.png?auto=format,compress" alt="Logo ProgCero">
+            <h1>Panel de Envío Centralizado</h1>
+        </div>
+
+        <div class="main-actions">
+            <button id="sendAllButton" class="action-button">Enviar a Todos los Pendientes</button>
+            <button id="resetButton" class="action-button">Limpiar Estado</button>
+        </div>
+
+        <ul id="userList" class="user-list">
+            <!-- Las tarjetas de usuario se insertarán aquí -->
+        </ul>
+    </div>
+
+    <script>
+        const usuarios = [
+            { "nombre": "Andrés Felipe Sánchez Betancourt", "usuario": "andres-sanchez@progcero.pro", "pass": "AS5038</>3202" },
+            { "nombre": "Azucena Vargas Giraldo", "usuario": "azucena-vargas@progcero.pro", "pass": "AV6962</>9222" },
+            { "nombre": "Brandon Mauricio Rodríguez Villa", "usuario": "brandon-rodriguez@progcero.pro", "pass": "BR9460</>9470" },
+            { "nombre": "Daniel Santiago Molina Martínez", "usuario": "daniel-molina@progcero.pro", "pass": "DM8035</>6228" },
+            { "nombre": "Darcy Johana Mañunga Carvajal", "usuario": "darcy-manunga@progcero.pro", "pass": "DM3531</>3511" },
+            { "nombre": "Dayarys Jiménez Atencia", "usuario": "dayarys-jimenez@progcero.pro", "pass": "DJ2900</>3860" },
+            { "nombre": "Diego Alejandro Velásquez Sánchez", "usuario": "diego-velasquez@progcero.pro", "pass": "DV5452</>6361" },
+            { "nombre": "Emily Alejandra Soto González", "usuario": "emily-soto@progcero.pro", "pass": "ES8471</>5430" },
+            { "nombre": "Esteban David Salinas García", "usuario": "esteban-salinas@progcero.pro", "pass": "ES0773</>1553" },
+            { "nombre": "Isabella Montoya Vásquez", "usuario": "isabella-montoya@progcero.pro", "pass": "IM2604</>1864" },
+            { "nombre": "Jaider Manuel Blanco Vivanco", "usuario": "jaider-blanco@progcero.pro", "pass": "JB2927</>4248" },
+            { "nombre": "Jaider Santiago Blanco Vivanco", "usuario": "jaider-blanco2@progcero.pro", "pass": "JB2910</>4246" },
+            { "nombre": "Jhon Carlos Rodríguez Mendoza", "usuario": "jhon-rodriguez@progcero.pro", "pass": "JR8806</>3218" },
+            { "nombre": "Juan Diego Trujillo Hernández", "usuario": "juan-trujillo@progcero.pro", "pass": "JT8187</>2088" },
+            { "nombre": "Julian Jeffrey Nuñez Cañas", "usuario": "julian-nunez@progcero.pro", "pass": "JN2418</>1594" },
+            { "nombre": "Karina Alexandra Leal Herrera", "usuario": "karina-leal@progcero.pro", "pass": "KL0441</>2325" },
+            { "nombre": "Katy Julieth Terán Mercado", "usuario": "katy-teran@progcero.pro", "pass": "KT5963</>8689" },
+            { "nombre": "Luis Daniel Achicanoy Quintero", "usuario": "luis-achicanoy@progcero.pro", "pass": "LA7355</>9191" },
+            { "nombre": "Luz Adriana Escorcia Villalobos", "usuario": "luz-escorcia@progcero.pro", "pass": "LE4052</>2130" },
+            { "nombre": "Mateo David Tordecilla Puche", "usuario": "mateo-tordecilla@progcero.pro", "pass": "MT5725</>0743" },
+            { "nombre": "Melanny Isabel Cardona Bermúdez", "usuario": "melanny-cardona@progcero.pro", "pass": "MC0025</>9175" },
+            { "nombre": "Miguel Ángel Hernández Orozco", "usuario": "miguel-hernandez@progcero.pro", "pass": "MH2797</>3233" },
+            { "nombre": "Santiago Aleimer Colón Solar", "usuario": "santiago-colon@progcero.pro", "pass": "SC3258</>7448" },
+            { "nombre": "Santiago Cisneros Insuasti", "usuario": "santiago-cisneros@progcero.pro", "pass": "SC1288</>2695" },
+            { "nombre": "Sara Bolívar Tovar", "usuario": "sara-bolivar@progcero.pro", "pass": "SB4675</>4435" },
+            { "nombre": "Tatiana De La Cruz", "usuario": "tatiana-delacruz@progcero.pro", "pass": "TD0118</>6396" },
+            { "nombre": "Tomás Santiago Osorio Puello", "usuario": "tomas-osorio@progcero.pro", "pass": "TO3445</>4015" },
+            { "nombre": "Valerie Herrera Alemán", "usuario": "valerie-herrera@progcero.pro", "pass": "VH3896</>5183" },
+            { "nombre": "Valentina Tole Silva", "usuario": "valentina-tole@progcero.pro", "pass": "VT8490</>4623" },
+            { "nombre": "Valerin Dayana Bustos Caicedo", "usuario": "valerin-bustos@progcero.pro", "pass": "VB5099</>4627" },
+            { "nombre": "Wilder Estiven Méndez Montoya", "usuario": "wilder-mendez@progcero.pro", "pass": "WM6441</>6105" }
+        ];
+
+        const targetPhoneNumber = "+573042359048"; // Número de destino fijo
+        const plataforma_url = "https://servidor-hrz.github.io/Curso_ProgCero/";
+        const imagen_url = "https://images.prismic.io/sgenusdata/aLDAZGGNHVfTObFg_logo.png?auto=format,compress";
+        const userList = document.getElementById('userList');
+
+        const sendIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="18" height="18"><path d="M3.105 2.289a.75.75 0 00-.826.95l1.414 4.949a.75.75 0 00.95.533h6.375a.75.75 0 010 1.5H4.643a.75.75 0 00-.95.533L2.28 16.761a.75.75 0 00.826.95l14.433-3.207a.75.75 0 000-1.408L3.105 2.289z" /></svg>`;
+        const sentIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="18" height="18"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" /></svg>`;
+        const sendingIcon = `<svg class="animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" width="18" height="18"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
+
+        function sendMessage(user, buttonElement) {
+            buttonElement.disabled = true;
+            buttonElement.classList.add('sending');
+            buttonElement.innerHTML = `${sendingIcon} <span>Enviando</span>`;
+
+            const mensaje = `¡Hola, ${user.nombre}! 👋\n\n¡Tu cuenta para *ProgCero* está lista!\n\n--- *Tus Credenciales* ---\n🌐 *Plataforma:* ${plataforma_url}\n📧 *Usuario:* \`${user.usuario}\`\n🔑 *Contraseña:* \`${user.pass}\`\n--------------------\n\n*¡AVISO IMPORTANTE!* 📢\nPodrás iniciar sesión hoy a partir de las 6:00 PM.\n\nAquí tienes el logo del curso:\n${imagen_url}`;
+            
+            const encodedMessage = encodeURIComponent(mensaje);
+            // La magia está aquí: usamos el número de teléfono fijo en lugar del de cada usuario.
+            const whatsappLink = `https://wa.me/${targetPhoneNumber.substring(1)}?text=${encodedMessage}`;
+            
+            window.open(whatsappLink, '_blank');
+            
+            setTimeout(() => {
+                localStorage.setItem('sent_' + user.nombre, 'true');
+                renderUsers();
+            }, 1500);
+        }
+
+        function renderUsers() {
+            userList.innerHTML = '';
+            
+            usuarios.forEach((user, index) => {
+                const card = document.createElement('li');
+                card.className = 'user-card';
+
+                const userNumber = document.createElement('span');
+                userNumber.className = 'user-number';
+                userNumber.textContent = `${index + 1}.`;
+
+                const userInfo = document.createElement('div');
+                userInfo.className = 'user-info';
+                
+                const userName = document.createElement('div');
+                userName.className = 'user-name';
+                userName.textContent = user.nombre;
+
+                const userStatus = document.createElement('div');
+                userStatus.className = 'user-status';
+
+                const button = document.createElement('button');
+                button.className = 'send-button';
+                
+                const isSent = localStorage.getItem('sent_' + user.nombre);
+
+                if (isSent) {
+                    userStatus.textContent = 'Mensaje Enviado';
+                    button.innerHTML = `${sentIcon} <span>Enviado</span>`;
+                    button.classList.add('sent');
+                    button.disabled = true;
+                } else {
+                    userStatus.textContent = 'Pendiente de envío';
+                    button.innerHTML = `${sendIcon} <span>Enviar</span>`;
+                    button.onclick = () => sendMessage(user, button);
+                }
+                
+                userInfo.appendChild(userName);
+                userInfo.appendChild(userStatus);
+                card.appendChild(userNumber);
+                card.appendChild(userInfo);
+                card.appendChild(button);
+                userList.appendChild(card);
+            });
+        }
+
+        document.getElementById('sendAllButton').onclick = () => {
+            if (confirm('¿Estás seguro de que quieres enviar mensajes a todos los usuarios pendientes?')) {
+                let delay = 0;
+                document.querySelectorAll('.send-button:not(.sent)').forEach(button => {
+                    setTimeout(() => {
+                        button.click();
+                    }, delay);
+                    delay += 2000;
+                });
+            }
+        };
+
+        document.getElementById('resetButton').onclick = () => {
+            if (confirm('¿Estás seguro de que quieres limpiar el estado de envío de todos los usuarios?')) {
+                usuarios.forEach(user => {
+                    localStorage.removeItem('sent_' + user.nombre);
+                });
+                renderUsers();
+            }
+        };
+
+        window.onload = renderUsers;
+    </script>
+
+</body>
+</html>
+
