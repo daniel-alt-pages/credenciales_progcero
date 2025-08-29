@@ -3,20 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Envío Centralizado - ProgCero</title>
+    <title>Consulta de Credenciales - ProgCero</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
         :root {
-            --background-gradient: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
-            --surface-color: rgba(255, 255, 255, 0.07);
-            --border-color: rgba(255, 255, 255, 0.15);
-            --text-primary: #e0e0e0;
-            --text-secondary: #a0a0a0;
+            --background-gradient: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            --surface-color: rgba(255, 255, 255, 0.05);
+            --border-color: rgba(255, 255, 255, 0.2);
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
             --primary-color: #3f51b5;
             --primary-hover: #5c6bc0;
             --success-color: #00e676;
-            --danger-color: #e91e63;
+            --error-color: #ff5252;
         }
 
         body {
@@ -29,150 +29,208 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            overflow: hidden;
         }
+
         .container {
             width: 100%;
-            max-width: 550px;
-            background: var(--surface-color);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            padding: 30px;
-            border-radius: 16px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--border-color);
-        }
-        .header {
+            max-width: 450px;
             text-align: center;
-            margin-bottom: 25px;
+            background: var(--surface-color);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+            border: 1px solid var(--border-color);
+            animation: fadeIn 0.5s ease-out;
         }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         .header img {
-            width: 60px;
-            height: 60px;
+            width: 80px;
+            height: 80px;
             border-radius: 50%;
-            margin-bottom: 15px;
-            border: 2px solid var(--primary-color);
+            margin-bottom: 20px;
+            border: 3px solid var(--primary-color);
         }
+
         h1 {
-            color: #ffffff;
-            margin: 0;
-            font-size: 24px;
-            font-weight: 600;
+            margin: 0 0 10px 0;
+            font-size: 28px;
+            font-weight: 700;
         }
-        .main-actions {
+
+        p {
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+        }
+
+        .search-box {
             display: flex;
-            gap: 15px;
-            margin-bottom: 25px;
+            gap: 10px;
         }
-        .action-button {
+
+        #searchInput {
             flex-grow: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 12px;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.2);
+            color: var(--text-primary);
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        #searchInput:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 15px rgba(63, 81, 181, 0.5);
+        }
+
+        #searchButton {
+            padding: 15px 25px;
             border: none;
             border-radius: 8px;
-            font-size: 15px;
+            background: var(--primary-color);
+            color: white;
+            font-size: 16px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
         }
-        #sendAllButton {
-            background-color: var(--primary-color);
-            color: white;
+        #searchButton:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
         }
-        #sendAllButton:hover {
-            background-color: var(--primary-hover);
-            box-shadow: 0 0 15px rgba(63, 81, 181, 0.5);
-        }
-        #resetButton {
-            background-color: transparent;
-            border: 1px solid var(--danger-color);
-            color: var(--danger-color);
-        }
-        #resetButton:hover {
-            background-color: var(--danger-color);
-            color: white;
-        }
-        .user-list {
-            list-style: none;
-            padding: 0;
-            max-height: 50vh;
-            overflow-y: auto;
-            padding-right: 10px;
-        }
-        .user-card {
-            display: flex;
+
+        /* Modal Styles */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            display: none;
+            justify-content: center;
             align-items: center;
-            padding: 12px 15px;
-            background: rgba(0,0,0,0.1);
-            border-radius: 8px;
-            margin-bottom: 12px;
-            transition: background-color 0.2s ease;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
         }
-        .user-card:hover {
-            background: rgba(0,0,0,0.2);
+        .modal-backdrop.visible {
+            display: flex;
+            opacity: 1;
         }
-        .user-number {
-            font-size: 14px;
-            font-weight: 600;
+        .modal-content {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+            width: 90%;
+            max-width: 500px;
+            text-align: left;
+            position: relative;
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+        }
+        .modal-backdrop.visible .modal-content {
+            transform: scale(1);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .modal-header h2 {
+            margin: 0;
+            font-size: 22px;
+        }
+        #credentialModal .modal-header h2 { color: var(--success-color); }
+        #errorModal .modal-header h2 { color: var(--error-color); }
+
+        .close-button {
+            background: none;
+            border: none;
             color: var(--text-secondary);
-            margin-right: 15px;
-            min-width: 25px;
+            font-size: 24px;
+            cursor: pointer;
+            line-height: 1;
         }
-        .user-info {
+        .credential-item {
+            margin-bottom: 15px;
+            background: rgba(0,0,0,0.2);
+            padding: 12px 15px;
+            border-radius: 8px;
+            user-select: text; /* Permite seleccionar el texto */
+        }
+        .credential-item strong {
+            display: block;
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 5px;
+            user-select: none; /* Evita seleccionar el label */
+        }
+        .credential-item span {
+            word-wrap: break-word;
+            font-weight: 500;
+        }
+        .modal-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+        .modal-button {
             flex-grow: 1;
-        }
-        .user-name {
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            font-size: 15px;
             font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .modal-button:hover {
+            border-color: var(--primary-color);
+            background-color: var(--primary-color);
+        }
+        
+        #errorModal p {
+            color: var(--text-primary);
             font-size: 16px;
         }
-        .user-status {
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-        .send-button {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 10px 18px;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            transition: all 0.2s ease;
-            min-width: 120px; /* Ancho mínimo para consistencia */
-        }
-        .send-button:hover {
-            background-color: var(--primary-hover);
-        }
-        .send-button svg {
-            width: 18px;
-            height: 18px;
-        }
-        .send-button.sending {
-            background-color: #555;
-            cursor: wait;
-        }
-        .send-button.sent {
-            background-color: transparent;
-            border: 1px solid var(--success-color);
-            color: var(--success-color);
-            cursor: default;
-        }
-        .send-button.sent:hover {
-            background-color: transparent;
-        }
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-        .animate-spin {
-            animation: spin 1s linear infinite;
+
+        @media print {
+            body > *:not(.modal-backdrop),
+            .modal-backdrop > *:not(.modal-content),
+            .modal-actions,
+            .close-button {
+                display: none !important;
+            }
+            .modal-backdrop {
+                background: none;
+                backdrop-filter: none;
+                justify-content: flex-start;
+                align-items: flex-start;
+            }
+            .modal-content {
+                box-shadow: none;
+                border: 1px solid #000;
+                color: #000; /* Texto negro para impresión */
+            }
+            .modal-content * {
+                color: #000 !important;
+            }
         }
     </style>
 </head>
@@ -181,150 +239,152 @@
     <div class="container">
         <div class="header">
             <img src="https://images.prismic.io/sgenusdata/aLDAZGGNHVfTObFg_logo.png?auto=format,compress" alt="Logo ProgCero">
-            <h1>Panel de Envío Centralizado</h1>
+            <h1>Consulta de Credenciales</h1>
+            <p>Ingresa tu número de documento para ver tus datos de acceso.</p>
         </div>
-
-        <div class="main-actions">
-            <button id="sendAllButton" class="action-button">Enviar a Todos los Pendientes</button>
-            <button id="resetButton" class="action-button">Limpiar Estado</button>
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Número de Documento">
+            <button id="searchButton">Consultar</button>
         </div>
+    </div>
 
-        <ul id="userList" class="user-list">
-            <!-- Las tarjetas de usuario se insertarán aquí -->
-        </ul>
+    <!-- Success Modal -->
+    <div id="credentialModal" class="modal-backdrop">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>¡Credenciales Encontradas!</h2>
+                <button class="close-button" id="closeCredentialModal">&times;</button>
+            </div>
+            <div class="credential-item">
+                <strong>Nombre:</strong>
+                <span id="modalName"></span>
+            </div>
+            <div class="credential-item">
+                <strong>Usuario:</strong>
+                <span id="modalUser"></span>
+            </div>
+            <div class="credential-item">
+                <strong>Contraseña:</strong>
+                <span id="modalPass"></span>
+            </div>
+            <div class="modal-actions">
+                <button id="copyButton" class="modal-button">Copiar Credenciales</button>
+                <button id="screenshotButton" class="modal-button">Guardar como PDF / Captura</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error Modal -->
+    <div id="errorModal" class="modal-backdrop">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Error de Consulta</h2>
+                <button class="close-button" id="closeErrorModal">&times;</button>
+            </div>
+            <p>El número de documento ingresado no fue encontrado. Por favor, verifica que sea correcto e intenta nuevamente.</p>
+        </div>
     </div>
 
     <script>
         const usuarios = [
-            { "nombre": "Andrés Felipe Sánchez Betancourt", "usuario": "andres-sanchez@progcero.pro", "pass": "AS5038</>3202" },
-            { "nombre": "Azucena Vargas Giraldo", "usuario": "azucena-vargas@progcero.pro", "pass": "AV6962</>9222" },
-            { "nombre": "Brandon Mauricio Rodríguez Villa", "usuario": "brandon-rodriguez@progcero.pro", "pass": "BR9460</>9470" },
-            { "nombre": "Daniel Santiago Molina Martínez", "usuario": "daniel-molina@progcero.pro", "pass": "DM8035</>6228" },
-            { "nombre": "Darcy Johana Mañunga Carvajal", "usuario": "darcy-manunga@progcero.pro", "pass": "DM3531</>3511" },
-            { "nombre": "Dayarys Jiménez Atencia", "usuario": "dayarys-jimenez@progcero.pro", "pass": "DJ2900</>3860" },
-            { "nombre": "Diego Alejandro Velásquez Sánchez", "usuario": "diego-velasquez@progcero.pro", "pass": "DV5452</>6361" },
-            { "nombre": "Emily Alejandra Soto González", "usuario": "emily-soto@progcero.pro", "pass": "ES8471</>5430" },
-            { "nombre": "Esteban David Salinas García", "usuario": "esteban-salinas@progcero.pro", "pass": "ES0773</>1553" },
-            { "nombre": "Isabella Montoya Vásquez", "usuario": "isabella-montoya@progcero.pro", "pass": "IM2604</>1864" },
-            { "nombre": "Jaider Manuel Blanco Vivanco", "usuario": "jaider-blanco@progcero.pro", "pass": "JB2927</>4248" },
-            { "nombre": "Jaider Santiago Blanco Vivanco", "usuario": "jaider-blanco2@progcero.pro", "pass": "JB2910</>4246" },
-            { "nombre": "Jhon Carlos Rodríguez Mendoza", "usuario": "jhon-rodriguez@progcero.pro", "pass": "JR8806</>3218" },
-            { "nombre": "Juan Diego Trujillo Hernández", "usuario": "juan-trujillo@progcero.pro", "pass": "JT8187</>2088" },
-            { "nombre": "Julian Jeffrey Nuñez Cañas", "usuario": "julian-nunez@progcero.pro", "pass": "JN2418</>1594" },
-            { "nombre": "Karina Alexandra Leal Herrera", "usuario": "karina-leal@progcero.pro", "pass": "KL0441</>2325" },
-            { "nombre": "Katy Julieth Terán Mercado", "usuario": "katy-teran@progcero.pro", "pass": "KT5963</>8689" },
-            { "nombre": "Luis Daniel Achicanoy Quintero", "usuario": "luis-achicanoy@progcero.pro", "pass": "LA7355</>9191" },
-            { "nombre": "Luz Adriana Escorcia Villalobos", "usuario": "luz-escorcia@progcero.pro", "pass": "LE4052</>2130" },
-            { "nombre": "Mateo David Tordecilla Puche", "usuario": "mateo-tordecilla@progcero.pro", "pass": "MT5725</>0743" },
-            { "nombre": "Melanny Isabel Cardona Bermúdez", "usuario": "melanny-cardona@progcero.pro", "pass": "MC0025</>9175" },
-            { "nombre": "Miguel Ángel Hernández Orozco", "usuario": "miguel-hernandez@progcero.pro", "pass": "MH2797</>3233" },
-            { "nombre": "Santiago Aleimer Colón Solar", "usuario": "santiago-colon@progcero.pro", "pass": "SC3258</>7448" },
-            { "nombre": "Santiago Cisneros Insuasti", "usuario": "santiago-cisneros@progcero.pro", "pass": "SC1288</>2695" },
-            { "nombre": "Sara Bolívar Tovar", "usuario": "sara-bolivar@progcero.pro", "pass": "SB4675</>4435" },
-            { "nombre": "Tatiana De La Cruz", "usuario": "tatiana-delacruz@progcero.pro", "pass": "TD0118</>6396" },
-            { "nombre": "Tomás Santiago Osorio Puello", "usuario": "tomas-osorio@progcero.pro", "pass": "TO3445</>4015" },
-            { "nombre": "Valerie Herrera Alemán", "usuario": "valerie-herrera@progcero.pro", "pass": "VH3896</>5183" },
-            { "nombre": "Valentina Tole Silva", "usuario": "valentina-tole@progcero.pro", "pass": "VT8490</>4623" },
-            { "nombre": "Valerin Dayana Bustos Caicedo", "usuario": "valerin-bustos@progcero.pro", "pass": "VB5099</>4627" },
-            { "nombre": "Wilder Estiven Méndez Montoya", "usuario": "wilder-mendez@progcero.pro", "pass": "WM6441</>6105" }
+            { "nombre": "Andrés Felipe Sánchez Betancourt", "usuario": "andres-sanchez@progcero.pro", "pass": "AS5038</>3202", "numeroDocumento": "1043153202" },
+            { "nombre": "Azucena Vargas Giraldo", "usuario": "azucena-vargas@progcero.pro", "pass": "AV6962</>9222", "numeroDocumento": "1001979222" },
+            { "nombre": "Brandon Mauricio Rodríguez Villa", "usuario": "brandon-rodriguez@progcero.pro", "pass": "BR9460</>9470", "numeroDocumento": "1029989470" },
+            { "nombre": "Daniel Santiago Molina Martínez", "usuario": "daniel-molina@progcero.pro", "pass": "DM8035</>6228", "numeroDocumento": "1067606228" },
+            { "nombre": "Darcy Johana Mañunga Carvajal", "usuario": "darcy-manunga@progcero.pro", "pass": "DM3531</>3511", "numeroDocumento": "1065443511" },
+            { "nombre": "Dayarys Jiménez Atencia", "usuario": "dayarys-jimenez@progcero.pro", "pass": "DJ2900</>3860", "numeroDocumento": "1050723860" },
+            { "nombre": "Diego Alejandro Velásquez Sánchez", "usuario": "diego-velasquez@progcero.pro", "pass": "DV5452</>6361", "numeroDocumento": "1116786361" },
+            { "nombre": "Emily Alejandra Soto González", "usuario": "emily-soto@progcero.pro", "pass": "ES8471</>5430", "numeroDocumento": "1031815430" },
+            { "nombre": "Esteban David Salinas García", "usuario": "esteban-salinas@progcero.pro", "pass": "ES0773</>1553", "numeroDocumento": "1067601553" },
+            { "nombre": "Isabella Montoya Vásquez", "usuario": "isabella-montoya@progcero.pro", "pass": "IM2604</>1864", "numeroDocumento": "1114311864" },
+            { "nombre": "Jaider Manuel Blanco Vivanco", "usuario": "jaider-blanco@progcero.pro", "pass": "JB2927</>4248", "numeroDocumento": "1043164248" },
+            { "nombre": "Jaider Santiago Blanco Vivanco", "usuario": "jaider-blanco2@progcero.pro", "pass": "JB2910</>4246", "numeroDocumento": "1043164246" },
+            { "nombre": "Jhon Carlos Rodríguez Mendoza", "usuario": "jhon-rodriguez@progcero.pro", "pass": "JR8806</>3218", "numeroDocumento": "1103743218" },
+            { "nombre": "Juan Diego Trujillo Hernández", "usuario": "juan-trujillo@progcero.pro", "pass": "JT8187</>2088", "numeroDocumento": "1062302088" },
+            { "nombre": "Julian Jeffrey Nuñez Cañas", "usuario": "julian-nunez@progcero.pro", "pass": "JN2418</>1594", "numeroDocumento": "1097191594" },
+            { "nombre": "Karina Alexandra Leal Herrera", "usuario": "karina-leal@progcero.pro", "pass": "KL0441</>2325", "numeroDocumento": "1122122325" },
+            { "nombre": "Katy Julieth Terán Mercado", "usuario": "katy-teran@progcero.pro", "pass": "KT5963</>8689", "numeroDocumento": "1101878689" },
+            { "nombre": "Luis Daniel Achicanoy Quintero", "usuario": "luis-achicanoy@progcero.pro", "pass": "LA7355</>9191", "numeroDocumento": "1110369191" },
+            { "nombre": "Luz Adriana Escorcia Villalobos", "usuario": "luz-escorcia@progcero.pro", "pass": "LE4052</>2130", "numeroDocumento": "1066282130" },
+            { "nombre": "Mateo David Tordecilla Puche", "usuario": "mateo-tordecilla@progcero.pro", "pass": "MT5725</>0743", "numeroDocumento": "1030240743" },
+            { "nombre": "Melanny Isabel Cardona Bermúdez", "usuario": "melanny-cardona@progcero.pro", "pass": "MC0025</>9175", "numeroDocumento": "1092459175" },
+            { "nombre": "Miguel Ángel Hernández Orozco", "usuario": "miguel-hernandez@progcero.pro", "pass": "MH2797</>3233", "numeroDocumento": "1201213233" },
+            { "nombre": "Santiago Aleimer Colón Solar", "usuario": "santiago-colon@progcero.pro", "pass": "SC3258</>7448", "numeroDocumento": "1043677448" },
+            { "nombre": "Santiago Cisneros Insuasti", "usuario": "santiago-cisneros@progcero.pro", "pass": "SC1288</>2695", "numeroDocumento": "1086132695" },
+            { "nombre": "Sara Bolívar Tovar", "usuario": "sara-bolivar@progcero.pro", "pass": "SB4675</>4435", "numeroDocumento": "1052384435" },
+            { "nombre": "Tatiana De La Cruz", "usuario": "tatiana-delacruz@progcero.pro", "pass": "TD0118</>6396", "numeroDocumento": "1081276396" },
+            { "nombre": "Tomás Santiago Osorio Puello", "usuario": "tomas-osorio@progcero.pro", "pass": "TO3445</>4015", "numeroDocumento": "1201214015" },
+            { "nombre": "Valerie Herrera Alemán", "usuario": "valerie-herrera@progcero.pro", "pass": "VH3896</>5183", "numeroDocumento": "1101385183" },
+            { "nombre": "Valentina Tole Silva", "usuario": "valentina-tole@progcero.pro", "pass": "VT8490</>4623", "numeroDocumento": "1145724623" },
+            { "nombre": "Valerin Dayana Bustos Caicedo", "usuario": "valerin-bustos@progcero.pro", "pass": "VB5099</>4627", "numeroDocumento": "1023384627" },
+            { "nombre": "Wilder Estiven Méndez Montoya", "usuario": "wilder-mendez@progcero.pro", "pass": "WM6441</>6105", "numeroDocumento": "1127946105" }
         ];
 
-        const targetPhoneNumber = "+573042359048"; // Número de destino fijo
-        const plataforma_url = "https://servidor-hrz.github.io/Curso_ProgCero/";
-        const imagen_url = "https://images.prismic.io/sgenusdata/aLDAZGGNHVfTObFg_logo.png?auto=format,compress";
-        const userList = document.getElementById('userList');
+        const credentialModal = document.getElementById('credentialModal');
+        const errorModal = document.getElementById('errorModal');
+        const searchInput = document.getElementById('searchInput');
+        const searchButton = document.getElementById('searchButton');
+        const closeCredentialModal = document.getElementById('closeCredentialModal');
+        const closeErrorModal = document.getElementById('closeErrorModal');
+        const copyButton = document.getElementById('copyButton');
+        const screenshotButton = document.getElementById('screenshotButton');
 
-        const sendIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="18" height="18"><path d="M3.105 2.289a.75.75 0 00-.826.95l1.414 4.949a.75.75 0 00.95.533h6.375a.75.75 0 010 1.5H4.643a.75.75 0 00-.95.533L2.28 16.761a.75.75 0 00.826.95l14.433-3.207a.75.75 0 000-1.408L3.105 2.289z" /></svg>`;
-        const sentIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="18" height="18"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" /></svg>`;
-        const sendingIcon = `<svg class="animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" width="18" height="18"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
-
-        function sendMessage(user, buttonElement) {
-            buttonElement.disabled = true;
-            buttonElement.classList.add('sending');
-            buttonElement.innerHTML = `${sendingIcon} <span>Enviando</span>`;
-
-            const mensaje = `¡Hola, ${user.nombre}! 👋\n\n¡Tu cuenta para *ProgCero* está lista!\n\n--- *Tus Credenciales* ---\n🌐 *Plataforma:* ${plataforma_url}\n📧 *Usuario:* \`${user.usuario}\`\n🔑 *Contraseña:* \`${user.pass}\`\n--------------------\n\n*¡AVISO IMPORTANTE!* 📢\nPodrás iniciar sesión hoy a partir de las 6:00 PM.\n\nAquí tienes el logo del curso:\n${imagen_url}`;
-            
-            const encodedMessage = encodeURIComponent(mensaje);
-            // La magia está aquí: usamos el número de teléfono fijo en lugar del de cada usuario.
-            const whatsappLink = `https://wa.me/${targetPhoneNumber.substring(1)}?text=${encodedMessage}`;
-            
-            window.open(whatsappLink, '_blank');
-            
-            setTimeout(() => {
-                localStorage.setItem('sent_' + user.nombre, 'true');
-                renderUsers();
-            }, 1500);
+        function findUser(docNumber) {
+            return usuarios.find(user => user.numeroDocumento === docNumber.trim());
         }
 
-        function renderUsers() {
-            userList.innerHTML = '';
+        function showModal(modalElement) {
+            modalElement.classList.add('visible');
+        }
+
+        function hideModal(modalElement) {
+            modalElement.classList.remove('visible');
+        }
+
+        searchButton.addEventListener('click', () => {
+            const docNumber = searchInput.value;
+            const user = findUser(docNumber);
+            if (user) {
+                document.getElementById('modalName').textContent = user.nombre;
+                document.getElementById('modalUser').textContent = user.usuario;
+                document.getElementById('modalPass').textContent = user.pass;
+                showModal(credentialModal);
+            } else {
+                showModal(errorModal);
+            }
+        });
+
+        searchInput.addEventListener('keypress', (e) => e.key === 'Enter' && searchButton.click());
+
+        closeCredentialModal.addEventListener('click', () => hideModal(credentialModal));
+        closeErrorModal.addEventListener('click', () => hideModal(errorModal));
+
+        copyButton.addEventListener('click', () => {
+            const name = document.getElementById('modalName').textContent;
+            const user = document.getElementById('modalUser').textContent;
+            const pass = document.getElementById('modalPass').textContent;
+            const textToCopy = `Credenciales ProgCero:\nNombre: ${name}\nUsuario: ${user}\nContraseña: ${pass}`;
             
-            usuarios.forEach((user, index) => {
-                const card = document.createElement('li');
-                card.className = 'user-card';
-
-                const userNumber = document.createElement('span');
-                userNumber.className = 'user-number';
-                userNumber.textContent = `${index + 1}.`;
-
-                const userInfo = document.createElement('div');
-                userInfo.className = 'user-info';
-                
-                const userName = document.createElement('div');
-                userName.className = 'user-name';
-                userName.textContent = user.nombre;
-
-                const userStatus = document.createElement('div');
-                userStatus.className = 'user-status';
-
-                const button = document.createElement('button');
-                button.className = 'send-button';
-                
-                const isSent = localStorage.getItem('sent_' + user.nombre);
-
-                if (isSent) {
-                    userStatus.textContent = 'Mensaje Enviado';
-                    button.innerHTML = `${sentIcon} <span>Enviado</span>`;
-                    button.classList.add('sent');
-                    button.disabled = true;
-                } else {
-                    userStatus.textContent = 'Pendiente de envío';
-                    button.innerHTML = `${sendIcon} <span>Enviar</span>`;
-                    button.onclick = () => sendMessage(user, button);
-                }
-                
-                userInfo.appendChild(userName);
-                userInfo.appendChild(userStatus);
-                card.appendChild(userNumber);
-                card.appendChild(userInfo);
-                card.appendChild(button);
-                userList.appendChild(card);
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                copyButton.textContent = '¡Copiado!';
+                setTimeout(() => {
+                    copyButton.textContent = 'Copiar Credenciales';
+                }, 2000);
             });
-        }
+        });
 
-        document.getElementById('sendAllButton').onclick = () => {
-            if (confirm('¿Estás seguro de que quieres enviar mensajes a todos los usuarios pendientes?')) {
-                let delay = 0;
-                document.querySelectorAll('.send-button:not(.sent)').forEach(button => {
-                    setTimeout(() => {
-                        button.click();
-                    }, delay);
-                    delay += 2000;
-                });
+        screenshotButton.addEventListener('click', () => {
+            window.print();
+        });
+
+        // Security: Disable context menu and dev tools shortcuts
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        document.addEventListener('keydown', e => {
+            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I') || (e.ctrlKey && e.shiftKey && e.key === 'J') || (e.ctrlKey && e.key === 'U')) {
+                e.preventDefault();
             }
-        };
+        });
 
-        document.getElementById('resetButton').onclick = () => {
-            if (confirm('¿Estás seguro de que quieres limpiar el estado de envío de todos los usuarios?')) {
-                usuarios.forEach(user => {
-                    localStorage.removeItem('sent_' + user.nombre);
-                });
-                renderUsers();
-            }
-        };
-
-        window.onload = renderUsers;
     </script>
 
 </body>
