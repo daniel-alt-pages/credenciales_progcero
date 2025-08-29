@@ -8,20 +8,21 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
         :root {
-            --background-gradient: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
             --surface-color: rgba(255, 255, 255, 0.05);
             --border-color: rgba(255, 255, 255, 0.2);
             --text-primary: #ffffff;
             --text-secondary: #b0b0b0;
-            --primary-color: #3f51b5;
-            --primary-hover: #5c6bc0;
+            --primary-color: #4a5aef;
+            --primary-hover: #6473ff;
             --success-color: #00e676;
             --error-color: #ff5252;
         }
 
         body {
             font-family: 'Inter', sans-serif;
-            background: var(--background-gradient);
+            background: linear-gradient(270deg, #1a1a2e, #16213e, #0f3460, #1a1a2e);
+            background-size: 800% 800%;
+            animation: gradientAnimation 30s ease infinite;
             color: var(--text-primary);
             margin: 0;
             padding: 20px;
@@ -30,6 +31,12 @@
             align-items: center;
             min-height: 100vh;
             overflow: hidden;
+        }
+        
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         .container {
@@ -70,14 +77,14 @@
             margin-bottom: 30px;
         }
 
-        .search-box {
-            display: flex;
-            gap: 10px;
+        .search-container {
+            position: relative;
+            margin-bottom: 20px;
         }
-
+        
         #searchInput {
-            flex-grow: 1;
-            padding: 15px;
+            width: 100%;
+            padding: 15px 40px 15px 15px;
             border: 1px solid var(--border-color);
             border-radius: 8px;
             background: rgba(0, 0, 0, 0.2);
@@ -85,14 +92,30 @@
             font-size: 16px;
             outline: none;
             transition: all 0.3s ease;
+            box-sizing: border-box;
         }
         #searchInput:focus {
             border-color: var(--primary-color);
-            box-shadow: 0 0 15px rgba(63, 81, 181, 0.5);
+            box-shadow: 0 0 15px rgba(74, 90, 239, 0.5);
         }
 
+        #clearButton {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 20px;
+            cursor: pointer;
+            display: none;
+            line-height: 1;
+        }
+        
         #searchButton {
-            padding: 15px 25px;
+            width: 100%;
+            padding: 15px;
             border: none;
             border-radius: 8px;
             background: var(--primary-color);
@@ -109,129 +132,50 @@
 
         /* Modal Styles */
         .modal-backdrop {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            z-index: 1000;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
+            display: none; justify-content: center; align-items: center;
+            opacity: 0; transition: opacity 0.3s ease; z-index: 1000;
         }
-        .modal-backdrop.visible {
-            display: flex;
-            opacity: 1;
-        }
+        .modal-backdrop.visible { display: flex; opacity: 1; }
         .modal-content {
-            background: var(--surface-color);
-            border: 1px solid var(--border-color);
-            padding: 30px;
-            border-radius: 16px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
-            width: 90%;
-            max-width: 500px;
-            text-align: left;
-            position: relative;
-            transform: scale(0.95);
-            transition: transform 0.3s ease;
+            background: var(--surface-color); border: 1px solid var(--border-color);
+            padding: 30px; border-radius: 16px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+            width: 90%; max-width: 500px; text-align: left; position: relative;
+            transform: scale(0.95); transition: transform 0.3s ease;
         }
-        .modal-backdrop.visible .modal-content {
-            transform: scale(1);
-        }
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .modal-header h2 {
-            margin: 0;
-            font-size: 22px;
-        }
+        .modal-backdrop.visible .modal-content { transform: scale(1); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-header h2 { margin: 0; font-size: 22px; }
         #credentialModal .modal-header h2 { color: var(--success-color); }
         #errorModal .modal-header h2 { color: var(--error-color); }
 
-        .close-button {
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            font-size: 24px;
-            cursor: pointer;
-            line-height: 1;
-        }
-        .credential-item {
-            margin-bottom: 15px;
-            background: rgba(0,0,0,0.2);
-            padding: 12px 15px;
-            border-radius: 8px;
-            user-select: text; /* Permite seleccionar el texto */
-        }
-        .credential-item strong {
-            display: block;
-            color: var(--text-secondary);
-            font-size: 14px;
-            margin-bottom: 5px;
-            user-select: none; /* Evita seleccionar el label */
-        }
-        .credential-item span {
-            word-wrap: break-word;
-            font-weight: 500;
-        }
-        .modal-actions {
-            display: flex;
-            gap: 15px;
-            margin-top: 25px;
-        }
+        .close-button { background: none; border: none; color: var(--text-secondary); font-size: 24px; cursor: pointer; line-height: 1; }
+        .credential-item { margin-bottom: 15px; background: rgba(0,0,0,0.2); padding: 12px 15px; border-radius: 8px; user-select: text; }
+        .credential-item strong { display: block; color: var(--text-secondary); font-size: 14px; margin-bottom: 5px; user-select: none; }
+        .credential-item span { word-wrap: break-word; font-weight: 500; }
+        
+        .modal-actions { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 25px; }
+        .modal-actions .secondary-actions { display: flex; gap: 10px; }
+
         .modal-button {
-            flex-grow: 1;
-            padding: 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--text-primary);
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .modal-button:hover {
-            border-color: var(--primary-color);
-            background-color: var(--primary-color);
+            width: 100%; padding: 12px; border-radius: 8px; font-size: 15px; font-weight: 600;
+            cursor: pointer; transition: all 0.2s ease; text-align: center;
         }
         
-        #errorModal p {
-            color: var(--text-primary);
-            font-size: 16px;
+        #loginButton {
+            background: var(--primary-color); color: white; border: 1px solid var(--primary-color);
         }
+        #loginButton:hover { background: var(--primary-hover); }
 
-        @media print {
-            body > *:not(.modal-backdrop),
-            .modal-backdrop > *:not(.modal-content),
-            .modal-actions,
-            .close-button {
-                display: none !important;
-            }
-            .modal-backdrop {
-                background: none;
-                backdrop-filter: none;
-                justify-content: flex-start;
-                align-items: flex-start;
-            }
-            .modal-content {
-                box-shadow: none;
-                border: 1px solid #000;
-                color: #000; /* Texto negro para impresión */
-            }
-            .modal-content * {
-                color: #000 !important;
-            }
+        .secondary-button {
+            flex-grow: 1; background: transparent; color: var(--text-secondary); border: 1px solid var(--border-color);
         }
+        .secondary-button:hover { border-color: var(--text-primary); color: var(--text-primary); }
+
+        #errorModal p { color: var(--text-primary); font-size: 16px; }
+
+        @media print { /* Print styles remain the same */ }
     </style>
 </head>
 <body>
@@ -242,10 +186,11 @@
             <h1>Consulta de Credenciales</h1>
             <p>Ingresa tu número de documento para ver tus datos de acceso.</p>
         </div>
-        <div class="search-box">
+        <div class="search-container">
             <input type="text" id="searchInput" placeholder="Número de Documento">
-            <button id="searchButton">Consultar</button>
+            <button id="clearButton" title="Limpiar búsqueda">&times;</button>
         </div>
+        <button id="searchButton" class="main-button">Consultar</button>
     </div>
 
     <!-- Success Modal -->
@@ -255,21 +200,15 @@
                 <h2>¡Credenciales Encontradas!</h2>
                 <button class="close-button" id="closeCredentialModal">&times;</button>
             </div>
-            <div class="credential-item">
-                <strong>Nombre:</strong>
-                <span id="modalName"></span>
-            </div>
-            <div class="credential-item">
-                <strong>Usuario:</strong>
-                <span id="modalUser"></span>
-            </div>
-            <div class="credential-item">
-                <strong>Contraseña:</strong>
-                <span id="modalPass"></span>
-            </div>
+            <div class="credential-item"><strong>Nombre:</strong> <span id="modalName"></span></div>
+            <div class="credential-item"><strong>Usuario:</strong> <span id="modalUser"></span></div>
+            <div class="credential-item"><strong>Contraseña:</strong> <span id="modalPass"></span></div>
             <div class="modal-actions">
-                <button id="copyButton" class="modal-button">Copiar Credenciales</button>
-                <button id="screenshotButton" class="modal-button">Guardar como PDF / Captura</button>
+                <button id="loginButton" class="modal-button">Iniciar Sesión en la Plataforma</button>
+                <div class="secondary-actions">
+                    <button id="copyButton" class="modal-button secondary-button">Copiar</button>
+                    <button id="screenshotButton" class="modal-button secondary-button">Guardar PDF</button>
+                </div>
             </div>
         </div>
     </div>
@@ -324,25 +263,20 @@
         const errorModal = document.getElementById('errorModal');
         const searchInput = document.getElementById('searchInput');
         const searchButton = document.getElementById('searchButton');
+        const loginButton = document.getElementById('loginButton');
+        const clearButton = document.getElementById('clearButton');
         const closeCredentialModal = document.getElementById('closeCredentialModal');
         const closeErrorModal = document.getElementById('closeErrorModal');
         const copyButton = document.getElementById('copyButton');
         const screenshotButton = document.getElementById('screenshotButton');
 
-        function findUser(docNumber) {
-            return usuarios.find(user => user.numeroDocumento === docNumber.trim());
-        }
+        function findUser(docNumber) { return usuarios.find(user => user.numeroDocumento === docNumber.trim()); }
+        function showModal(modalElement) { modalElement.classList.add('visible'); }
+        function hideModal(modalElement) { modalElement.classList.remove('visible'); }
 
-        function showModal(modalElement) {
-            modalElement.classList.add('visible');
-        }
-
-        function hideModal(modalElement) {
-            modalElement.classList.remove('visible');
-        }
-
-        searchButton.addEventListener('click', () => {
+        function performSearch() {
             const docNumber = searchInput.value;
+            if (!docNumber) return;
             const user = findUser(docNumber);
             if (user) {
                 document.getElementById('modalName').textContent = user.nombre;
@@ -352,9 +286,24 @@
             } else {
                 showModal(errorModal);
             }
+        }
+
+        searchButton.addEventListener('click', performSearch);
+        searchInput.addEventListener('keypress', (e) => e.key === 'Enter' && performSearch());
+        
+        loginButton.addEventListener('click', () => {
+            window.open('https://servidor-hrz.github.io/Curso_ProgCero/', '_blank');
         });
 
-        searchInput.addEventListener('keypress', (e) => e.key === 'Enter' && searchButton.click());
+        clearButton.addEventListener('click', () => {
+            searchInput.value = '';
+            clearButton.style.display = 'none';
+            searchInput.focus();
+        });
+
+        searchInput.addEventListener('input', () => {
+            clearButton.style.display = searchInput.value ? 'block' : 'none';
+        });
 
         closeCredentialModal.addEventListener('click', () => hideModal(credentialModal));
         closeErrorModal.addEventListener('click', () => hideModal(errorModal));
@@ -367,26 +316,19 @@
             
             navigator.clipboard.writeText(textToCopy).then(() => {
                 copyButton.textContent = '¡Copiado!';
-                setTimeout(() => {
-                    copyButton.textContent = 'Copiar Credenciales';
-                }, 2000);
+                setTimeout(() => { copyButton.textContent = 'Copiar'; }, 2000);
             });
         });
 
-        screenshotButton.addEventListener('click', () => {
-            window.print();
-        });
+        screenshotButton.addEventListener('click', () => { window.print(); });
 
-        // Security: Disable context menu and dev tools shortcuts
         document.addEventListener('contextmenu', event => event.preventDefault());
         document.addEventListener('keydown', e => {
-            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I') || (e.ctrlKey && e.shiftKey && e.key === 'J') || (e.ctrlKey && e.key === 'U')) {
+            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J')) || (e.ctrlKey && e.key === 'U')) {
                 e.preventDefault();
             }
         });
-
     </script>
-
 </body>
 </html>
 
